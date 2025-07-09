@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if ! command -v mpstat &> /dev/null; then
+  echo "mpstat (sysstat) is not installed. Installing..."
+  sudo apt update && sudo apt install -y sysstat
+fi
+
+echo "Total CPU usage: " 
+mpstat 1 1 | awk '/^Average/ {print 100-$NF,"%"}'
+echo " "
+
+echo "Top 5 process in  CPU usage: " 
+top -b -o %CPU | head -n 12 | tail -n 7
+
+echo "used Memory: "
+free -h | awk '/^Mem:/ { print "used:", $3 }'
+
+echo " "
+echo "top 5 process in Memory usage: "
+
+top -b -o %MEM | head -n 12 | tail -n 7
+
+echo " " 
+echo "total disk, used, percentage: "
+
+df -h --total | awk '/total/ { printf "Used: %s, Free: %s, Usage: %s\n", $3, $4, $5 }'
